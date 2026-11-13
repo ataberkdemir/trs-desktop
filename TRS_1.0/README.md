@@ -32,4 +32,4 @@ Güncellenen `database/schema.sql`, yeni hesaplar için `admin_password_hash` ve
 
 ## Görsel önizleme
 
-`screenshots/01-giris-ekrani.png` boş giriş formunu gösterir. Kullanıcı/toplantı adı ve ayrıntıları içeren diğer görseller, verilerin kurgusal olduğu doğrulanamadığı için bu paylaşım paketine alınmadı.
+`screenshots/` klasöründe giriş, yönetici/kullanıcı ana sayfası, toplantı oluşturma, düzenleme ve listeleme akışlarını gösteren yedi ekran görüntüsü bulunur. Görsellerdeki kişi adları ve toplantı kayıtlarının kurgusal örnek veriler olduğu proje sahibi tarafından doğrulanmıştır.
