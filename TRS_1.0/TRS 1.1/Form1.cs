@@ -25,81 +25,72 @@ namespace TRS_1._1
         {
             baglanti bgl = new baglanti();
 
-            string sorgu = "SELECT admin_no FROM dbo.admin WHERE admin_id=@admin_id AND admin_pswrd=@admin_pswrd";
-            SqlCommand comand = new SqlCommand(sorgu)
+            const string adminQuery = "SELECT admin_no, admin_password_hash FROM dbo.admin WHERE admin_id=@admin_id";
+            int authenticatedAdminNo = -1;
+            using (SqlConnection connection = bgl.baglantim())
+            using (SqlCommand command = new SqlCommand(adminQuery, connection))
             {
-                Connection = bgl.baglantim()
-            };
+                command.Parameters.AddWithValue("@admin_id", textBox1.Text);
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.Read() && PasswordHasher.VerifyPassword(
+                        textBox2.Text, Convert.ToString(reader["admin_password_hash"])))
+                    {
+                        authenticatedAdminNo = reader.GetInt32(0);
+                    }
+                }
+            }
 
-            comand.Parameters.AddWithValue("@admin_id", textBox1.Text);
-            comand.Parameters.AddWithValue("@admin_pswrd", textBox2.Text);
-
-            SqlDataReader reader = comand.ExecuteReader();
-
-            if (reader.Read())
+            if (authenticatedAdminNo >= 0)
             {
-                // Burada, kullanıcının admin_no değerini "adminNo" değişkeninde sakladım.
-                // Daha sonra, bu değişkeni diğer formlarımda kullanarak profil bilgisi oluşturabilir ve "top_olustur" tablosundaki verileri filtreleyebilirim.
-
-                int adminNo = reader.GetInt32(0);
-                
+                int adminNo = authenticatedAdminNo;
                 Log log = new Log(adminNo);
                 log.LogWrite(adminNo + " No'lu Admin Toplantı Randevu Sistemine Giriş Yaptı");
 
-                Log form4 = new Log(adminNo);
-                form4.adminNo = adminNo; // Burada, "form4" nesnesinin "adminNo" özelliğine "adminNo" değişkenini atadım
-
-                Toplantı_Oluştur form3 = new Toplantı_Oluştur(adminNo);
-                form3.adminNo = adminNo; // Burada, "form3" nesnesinin "adminNo" özelliğine "adminNo" değişkenini atadım
-
                 Anasayfa anasayfaForm = new Anasayfa(adminNo);
-                anasayfaForm.adminNo = adminNo; // Burada, "anasayfaForm" nesnesinin "adminNo" özelliğine "adminNo" değişkenini atadım
-
-                TopDüzenle form2 = new TopDüzenle(adminNo);
-                form2.adminNo = adminNo; // Burada, "form2" nesnesinin "adminNo" özelliğine "adminNo" değişkenini atadım
-
+                anasayfaForm.adminNo = adminNo;
                 anasayfaForm.Show();
                 MessageBox.Show("Admin olarak giriş yaptınız. Admin sayfasını görüntülemektesiniz.");
                 this.Hide();
-                bgl.baglantim().Close();
             }
-
             else
             {
-                reader.Close();
-                string sorgu2 = "SELECT users_no , users_ad , users_soyad FROM dbo.users WHERE users_id=@users_id AND users_pswrd=@users_pswrd";
-                SqlCommand comand2 = new SqlCommand(sorgu2)
+                const string userQuery = "SELECT users_no, users_ad, users_soyad, users_password_hash FROM dbo.users WHERE users_id=@users_id";
+                int authenticatedUsersNo = -1;
+                string usersAd = string.Empty;
+
+                using (SqlConnection connection = bgl.baglantim())
+                using (SqlCommand command = new SqlCommand(userQuery, connection))
                 {
-                    Connection = bgl.baglantim()
-                };
-                comand2.Parameters.AddWithValue("@users_id", textBox1.Text);
-                comand2.Parameters.AddWithValue("@users_pswrd", textBox2.Text);
-                SqlDataReader reader2 = comand2.ExecuteReader();
+                    command.Parameters.AddWithValue("@users_id", textBox1.Text);
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read() && PasswordHasher.VerifyPassword(
+                            textBox2.Text, Convert.ToString(reader["users_password_hash"])))
+                        {
+                            authenticatedUsersNo = reader.GetInt32(0);
+                            usersAd = reader.GetString(1).Trim();
+                        }
+                    }
+                }
 
-                if (reader2.Read())
+                if (authenticatedUsersNo >= 0)
                 {
-                    
-                    int usersNo = reader2.GetInt32(0);
-                    string usersAd = reader2.GetString(1).Trim();
-                    string usersSoyad = reader2.GetString(2).Trim();
-                    KAnasayfa Kanasayfa1 = new KAnasayfa(usersNo, usersAd);
-                    Kanasayfa1.usersNo = usersNo;
-                    Kanasayfa1.usersAd = usersAd;
+                    KAnasayfa userHome = new KAnasayfa(authenticatedUsersNo, usersAd);
+                    userHome.usersNo = authenticatedUsersNo;
+                    userHome.usersAd = usersAd;
+                    KLog log = new KLog(authenticatedUsersNo);
+                    log.usersNo = authenticatedUsersNo;
 
-                    KLog form4 = new KLog(usersNo);
-                    form4.usersNo = usersNo;
-
-                    Kanasayfa1.Show();
+                    userHome.Show();
                     MessageBox.Show("Kullanıcı olarak giriş yaptınız. Kullanıcı sayfasını görüntülemektesiniz.");
                     this.Hide();
-                    bgl.baglantim().Close();
-                    reader2.Close();
                 }
                 else
                 {
                     MessageBox.Show("Kullanıcı Adınız Veya Şifreniz Hatalı");
                 }
-            }            
+            }
         }
 
         private void Form1_Load(object sender, EventArgs e)

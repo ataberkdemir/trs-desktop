@@ -26,7 +26,7 @@ namespace TRS_1._1.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=localhost;Initial Catalog=admingiris;Integrated Security=True;TrustServerCertificate=True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=localhost;Initial Catalog=admingiris;Integrated Security=True")]
         public string admingirisConnectionString {
             get {
                 return ((string)(this["admingirisConnectionString"]));

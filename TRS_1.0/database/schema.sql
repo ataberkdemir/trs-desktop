@@ -82,9 +82,9 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[admin](
-	[admin_no] [int] IDENTITY(1,1) NOT NULL,
-	[admin_id] [nchar](25) NULL,
-	[admin_pswrd] [nchar](25) NULL,
+		[admin_no] [int] IDENTITY(1,1) NOT NULL,
+		[admin_id] [nchar](25) NULL,
+		[admin_password_hash] [nvarchar](255) NOT NULL,
  CONSTRAINT [PK_admin] PRIMARY KEY CLUSTERED 
 (
 	[admin_no] ASC
@@ -97,9 +97,9 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[users](
-	[users_no] [int] IDENTITY(1,1) NOT NULL,
-	[users_id] [nchar](25) NULL,
-	[users_pswrd] [nchar](25) NULL,
+		[users_no] [int] IDENTITY(1,1) NOT NULL,
+		[users_id] [nchar](25) NULL,
+		[users_password_hash] [nvarchar](255) NOT NULL,
  CONSTRAINT [PK_users] PRIMARY KEY CLUSTERED 
 (
 	[users_no] ASC

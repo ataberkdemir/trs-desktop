@@ -178,11 +178,15 @@ namespace TRS_1._1
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
             baglanti bgl = new baglanti();
-            string search = "SELECT top_olusturan , top_bol , top_odasi , top_tar , top_saati , top_konusu , top_katilanlar , top_id FROM dbo.top_olustur WHERE CONCAT(top_id,top_katilanlar) LIKE '%" + textBox1.Text + "%'";
-            SqlDataAdapter da = new SqlDataAdapter(search, bgl.baglantim());
-            DataTable tb = new DataTable();
-            da.Fill(tb);
-            dataGridView1.DataSource = tb;
+            const string search = "SELECT top_olusturan, top_bol, top_odasi, top_tar, top_saati, top_konusu, top_katilanlar, top_id FROM dbo.top_olustur WHERE CONCAT(top_id, top_katilanlar) LIKE @search";
+            using (SqlConnection connection = bgl.baglantim())
+            using (SqlDataAdapter da = new SqlDataAdapter(search, connection))
+            {
+                da.SelectCommand.Parameters.Add("@search", SqlDbType.NVarChar, 1024).Value = "%" + textBox1.Text + "%";
+                DataTable tb = new DataTable();
+                da.Fill(tb);
+                dataGridView1.DataSource = tb;
+            }
             //textbox'a tıklanma metodunu kullanabilmek için kullandığım kod
             textBox1.Click += textBox1_Click;
         }
